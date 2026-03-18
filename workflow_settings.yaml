@@ -1,6 +1,7 @@
 defaultProject: sbx-edgar-ocado
 defaultDataset: sandbox_edgar_austin_bikeshare
 defaultAssertionDataset: sandbox_edgar_austin_bikeshare_assertions
+defaultLocation: europe-west1
 dataformCoreVersion: 3.0.42
 
 vars:
