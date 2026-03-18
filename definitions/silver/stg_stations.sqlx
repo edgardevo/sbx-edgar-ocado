@@ -23,4 +23,4 @@ SELECT
     council_district,
     modified_date
 FROM
-    ${ref("bikeshare_stations")} ${when(dataform.projectConfig.vars.is_sandbox, "TABLESAMPLE SYSTEM (10 PERCENT)")}
+    ${ref("bikeshare_stations")} ${when(dataform.projectConfig.vars.is_sandbox === "true", "TABLESAMPLE SYSTEM (10 PERCENT)")}

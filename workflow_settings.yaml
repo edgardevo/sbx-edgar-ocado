@@ -4,5 +4,5 @@ defaultAssertionDataset: sandbox_edgar_austin_bikeshare_assertions
 dataformCoreVersion: 3.0.42
 
 vars:
-  is_test_run: false
-  is_sandbox: true
+  is_test_run: "false"
+  is_sandbox: "true"
