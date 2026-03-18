@@ -20,8 +20,7 @@ config {
     },
     dependencies: [
         "stg_trips",
-        "stg_stations",
-        "calc_fare_udf"
+        "stg_stations"
     ]
 }
 
@@ -38,7 +37,7 @@ SELECT
     t.end_time,
     t.duration_minutes,
     ${functions.minutes_to_hours("t.duration_minutes")} AS duration_hours,
-    ${ref("calc_fare_udf")}(t.subscriber_type, t.duration_minutes) AS estimated_revenue,
+    ${dataform.projectConfig.defaultDataset}.calc_fare_udf(t.subscriber_type, t.duration_minutes) AS estimated_revenue,
     t.start_station_id,
     t.start_station_name,
     t.end_station_id,

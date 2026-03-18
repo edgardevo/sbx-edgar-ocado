@@ -1,6 +1,7 @@
 const tablesToDeclare = [
     "sbx-edgar-ocado.staging.bikeshare_trips",
-    "sbx-edgar-ocado.staging.bikeshare_stations"
+    "sbx-edgar-ocado.staging.bikeshare_stations",
+    "sbx-edgar-ocado.staging.bikeshare_trips_daily_counts"
 ];
 
 tablesToDeclare.forEach(fullTableId => {
