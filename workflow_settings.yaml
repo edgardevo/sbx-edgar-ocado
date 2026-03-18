@@ -2,3 +2,5 @@ defaultProject: sbx-edgar-ocado
 defaultDataset: dataform
 defaultAssertionDataset: dataform_assertions
 dataformCoreVersion: 3.0.42
+vars:
+    is_test_run: "true"
