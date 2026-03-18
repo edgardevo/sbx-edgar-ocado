@@ -1,0 +1,58 @@
+config {
+    type: "view",
+    description: "Gold layer view for analyzing revenue impact of Austin Bikeshare trips",
+    tags: ["medallion_gold", "mobility_revenue", "daily"],
+    columns: {
+        surrogate_key: "Unique hashed identifier for each trip",
+        trip_id: functions.common_columns.trip_id,
+        subscriber_type: functions.common_columns.subscriber_type,
+        start_time: functions.common_columns.start_time,
+        end_time: functions.common_columns.end_time,
+        duration_minutes: functions.common_columns.duration_minutes,
+        duration_hours: "Trip duration in hours (rounded)",
+        estimated_revenue: functions.common_columns.estimated_revenue,
+        start_station_id: functions.common_columns.station_id,
+        start_station_name: "Name of the starting station",
+        end_station_id: "ID for the end station",
+        end_station_name: "Name of the ending station",
+        station_status: functions.common_columns.station_status,
+        number_of_docks: "Number of docks at the starting station"
+    },
+    dependencies: [
+        "stg_trips",
+        "stg_stations",
+        "calc_fare_udf"
+    ]
+}
+
+pre_operations {
+  INSERT INTO ${ref("stg_trips_quality_subscriber_type")} (subscriber_type, count_of_records, first_seen, last_seen)
+  VALUES ('AUDIT_LOG', 0, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())
+}
+
+SELECT
+    t.surrogate_key,
+    t.trip_id,
+    t.subscriber_type,
+    t.start_time,
+    t.end_time,
+    t.duration_minutes,
+    ${functions.minutes_to_hours("t.duration_minutes")} AS duration_hours,
+    ${ref("calc_fare_udf")}(t.subscriber_type, t.duration_minutes) AS estimated_revenue,
+    t.start_station_id,
+    t.start_station_name,
+    t.end_station_id,
+    t.end_station_name,
+    s.station_status,
+    s.number_of_docks
+FROM
+    ${ref("stg_trips")} AS t
+LEFT JOIN
+    ${ref("stg_stations")} AS s
+ON
+    t.start_station_id = s.station_id
+
+post_operations {
+  -- Simulating a data classification tag update
+  ALTER VIEW ${self()} SET OPTIONS(labels=[("data_classification", "public"), ("governance_team", "mobility")]);
+}

@@ -1,0 +1,27 @@
+config {
+    type: "table",
+    database: "sbx-edgar-ocado",
+    schema: "executive_reporting",
+    description: "Executive-level summary of mobility data with action-level overrides",
+    tags: ["medallion_gold", "executive_reporting", "daily"],
+    columns: {
+        total_trips: "Total number of trips processed",
+        total_revenue: "Total estimated revenue across all trips"
+    }
+}
+
+SELECT
+    COUNT(*) AS total_trips,
+    SUM(estimated_revenue) AS total_revenue,
+    CURRENT_DATE() AS report_date
+FROM
+    ${ref("view_revenue_impact")}
+
+post_operations {
+  -- Simulating BigQuery Data Governance: Applying Policy Tags via labels or direct DDL
+  -- In a real environment, you might use 'ALTER COLUMN ... SET DATA POLICY'
+  ALTER TABLE ${self()} SET OPTIONS(
+    labels=[("data_sensitivity", "internal"), ("cost_center", "mobility_dept")],
+    description="This table resides in a cross-departmental reporting dataset"
+  );
+}

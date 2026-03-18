@@ -1,0 +1,18 @@
+test "test_revenue_logic" {
+    dataset: "view_revenue_impact"
+
+    input "stg_trips" {
+        SELECT "trip_1" AS trip_id, "Walk Up" AS subscriber_type, 10 AS duration_minutes, 101 AS start_station_id, TIMESTAMP("2026-01-01 10:00:00") AS start_time UNION ALL
+        SELECT "trip_2" AS trip_id, "Member" AS subscriber_type, 20 AS duration_minutes, 102 AS start_station_id, TIMESTAMP("2026-01-01 11:00:00") AS start_time
+    }
+
+    input "stg_stations" {
+        SELECT 101 AS station_id, "Active" AS station_status, 20 AS number_of_docks UNION ALL
+        SELECT 102 AS station_id, "Closed" AS station_status, 15 AS number_of_docks
+    }
+
+    expect {
+        SELECT "trip_1" AS trip_id, 1.20 AS estimated_revenue, "Active" AS station_status UNION ALL
+        SELECT "trip_2" AS trip_id, 0.0 AS estimated_revenue, "Closed" AS station_status
+    }
+}

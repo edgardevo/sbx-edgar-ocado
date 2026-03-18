@@ -1,0 +1,26 @@
+config {
+    type: "table",
+    description: "Cleaned station metadata for Austin Bikeshare",
+    tags: ["medallion_silver", "mobility_stations", "daily"],
+    assertions: {
+        uniqueKey: ["station_id"]
+    }
+}
+
+SELECT
+    station_id,
+    name AS station_name,
+    status AS station_status,
+    address,
+    alternate_name,
+    city_asset_number,
+    property_type,
+    number_of_docks,
+    power_type,
+    footprint_length,
+    footprint_width,
+    notes,
+    council_district,
+    modified_date
+FROM
+    ${ref("bikeshare_stations")} ${when(dataform.projectConfig.vars.is_sandbox, "TABLESAMPLE SYSTEM (10 PERCENT)")}

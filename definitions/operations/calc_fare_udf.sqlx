@@ -1,0 +1,15 @@
+config {
+    type: "operations",
+    hasOutput: true,
+    tags: ["setup", "udf", "medallion_silver"]
+}
+
+CREATE OR REPLACE FUNCTION ${self()}(subscriber_type STRING, duration_minutes INT64)
+RETURNS FLOAT64
+AS (
+    CASE
+        WHEN subscriber_type = 'Walk Up' THEN duration_minutes * 0.12
+        WHEN subscriber_type = 'Single Ride' THEN 2.0 + (duration_minutes * 0.05)
+        ELSE 0.0
+    END
+);

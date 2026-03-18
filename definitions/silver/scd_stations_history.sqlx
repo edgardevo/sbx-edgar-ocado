@@ -1,0 +1,24 @@
+config {
+    type: "incremental",
+    description: "SCD Type 2: Historical tracking of station metadata changes",
+    tags: ["medallion_silver", "mobility_stations", "history"],
+    uniqueKey: ["station_id", "valid_from"]
+}
+
+SELECT
+    station_id,
+    station_name,
+    station_status,
+    number_of_docks,
+    power_type,
+    CURRENT_TIMESTAMP() AS valid_from,
+    TIMESTAMP(NULL) AS valid_to,
+    TRUE AS is_current
+FROM
+    ${ref("stg_stations")}
+
+${when(incremental(), `
+    -- Logic to expire old records and insert new ones would go here in a production environment
+    -- For demo purposes, we show the structure of a history-tracking table
+    WHERE station_id NOT IN (SELECT station_id FROM ${self()} WHERE is_current = TRUE)
+`)}

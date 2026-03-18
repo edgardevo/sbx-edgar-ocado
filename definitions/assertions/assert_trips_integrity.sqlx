@@ -1,0 +1,34 @@
+config {
+    type: "assertion",
+    description: "Assert that daily trip counts match the source tracking table",
+    tags: ["quality_check", "medallion_gold"],
+}
+
+WITH daily_trips AS (
+    SELECT
+        DATE(start_time) AS trip_date,
+        COUNT(*) AS daily_count
+    FROM
+        ${ref("stg_trips")}
+    GROUP BY 1
+),
+source_daily_counts AS (
+    SELECT
+        trip_date,
+        trip_count
+    FROM
+        ${ref("bikeshare_trips_daily_counts")}
+)
+
+SELECT
+    t.trip_date,
+    t.daily_count,
+    s.trip_count
+FROM
+    daily_trips AS t
+INNER JOIN
+    source_daily_counts AS s
+ON
+    t.trip_date = s.trip_date
+WHERE
+    t.daily_count != s.trip_count
