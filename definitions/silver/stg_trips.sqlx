@@ -4,8 +4,7 @@ config {
     tags: ["medallion_silver", "mobility_trips", "daily"],
     bigquery: {
         partitionBy: "TIMESTAMP_TRUNC(start_time, DAY)",
-        clusterBy: ["start_station_name", "subscriber_type"],
-        requirePartitionFilter: true
+        clusterBy: ["start_station_name", "subscriber_type"]
     },
     columns: {
         trip_id: functions.common_columns.trip_id,
