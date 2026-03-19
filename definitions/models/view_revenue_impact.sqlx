@@ -1,0 +1,28 @@
+config {
+  type: "view",
+  dependencies: ["stg_trips_assertions_nonNull", "stg_trips_assertions_rowConditions", "stg_stations_assertions_uniqueKey"],
+  columns: {
+    trip_id: "Unique trip identifier.",
+    subscriber_type: "Type of subscriber (e.g., Member, Walk Up).",
+    station_name: "Name of the start station.",
+    duration_hours: "Trip duration in hours (converted from minutes).",
+    revenue: "Estimated revenue based on user type and trip duration.",
+    surrogate_key: "Hashed unique identifier for the trip record."
+  }
+}
+
+SELECT
+  t.trip_id,
+  t.subscriber_type,
+  t.start_station_name as station_name,
+  ${functions.minutes_to_hours("t.trip_duration_minutes")} as duration_hours,
+  CASE
+    WHEN t.subscriber_type = 'Walk Up' THEN t.trip_duration_minutes * 0.12
+    WHEN t.subscriber_type = 'Member' THEN 0.00
+    ELSE 0.00
+  END as revenue,
+  ${functions.generate_surrogate_key(["t.trip_id", "t.start_time"])} as surrogate_key
+FROM
+  ${ref("stg_trips")} t
+LEFT JOIN
+  ${ref("stg_stations")} s ON t.start_station_id = s.station_id

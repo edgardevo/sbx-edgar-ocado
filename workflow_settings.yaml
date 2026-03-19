@@ -1,4 +1,6 @@
 defaultProject: sbx-edgar-ocado
-defaultDataset: dataform
-defaultAssertionDataset: dataform_assertions
+defaultDataset: sandbox_edgar_austin_bikeshare
+defaultAssertionDataset: sandbox_edgar_austin_bikeshare_assertions
 dataformCoreVersion: 3.0.42
+vars:
+  is_test_run: "false"

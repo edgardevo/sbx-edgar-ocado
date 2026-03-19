@@ -1,0 +1,24 @@
+config {
+  type: "incremental",
+  bigquery: {
+    partitionBy: "TIMESTAMP_TRUNC(start_time, DAY)",
+    clusterBy: ["start_station_name", "subscriber_type"]
+  },
+  assertions: {
+    nonNull: ["subscriber_type"],
+    rowConditions: [
+      "trip_duration_minutes > 0",
+      "end_time >= start_time"
+    ]
+  }
+}
+
+SELECT
+  *,
+  duration_minutes as trip_duration_minutes
+FROM
+  ${ref("trips")}
+WHERE
+  1 = 1
+  ${when(dataform.projectConfig.vars.is_test_run === "true", `AND start_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)`)}
+  ${when(incremental(), `AND start_time > (SELECT MAX(start_time) FROM ${self()})`)}

@@ -1,0 +1,11 @@
+config {
+  type: "table",
+  assertions: {
+    uniqueKey: ["station_id"]
+  }
+}
+
+SELECT
+  *
+FROM
+  ${ref("stations")}
