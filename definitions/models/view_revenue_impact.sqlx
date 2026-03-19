@@ -1,0 +1,42 @@
+config {
+  type: "view", // Creates a real-time logic layer without duplicating storage
+  description: "Gold layer view combining trips and stations with revenue calculations",
+
+   // The view will NOT build if any of these files return rows!
+  dependencies: [
+    "assert_unique_station_id",
+    "assert_logical_trip_times",
+    "assert_subscriber_type_not_null",
+    "assert_positive_trip_duration"
+  ],
+
+  columns: {
+    trip_id: "Unique identifier for the bike trip",
+    start_station_name: "The name of the station where the trip originated",
+    end_station_name: "The name of the station where the trip concluded",
+    subscriber_type: "The type of user account, such as Walk Up or Member",
+    duration_minutes: "The total length of the trip measured in minutes",
+    estimated_revenue: "Calculated revenue: Walk Up users are charged $0.12/min, Members are free"
+  }
+}
+
+SELECT
+  t.trip_id,
+  t.start_station_name,
+  t.end_station_name,
+  t.subscriber_type,
+  t.duration_minutes,
+  -- Business Logic: Calculates estimated_revenue based on user type
+  CASE 
+    WHEN t.subscriber_type = 'Walk Up' THEN t.duration_minutes * 0.12
+    WHEN t.subscriber_type IN ('Member', 'Local365') THEN 0.00
+    ELSE 0.00 
+  END AS estimated_revenue
+FROM
+  ${ref("bikeshare_trips")} AS t
+-- Join trips and stations tables 
+LEFT JOIN
+  ${ref("bikeshare_stations")} AS s
+ON
+  -- Safely cast both IDs to STRING so they perfectly match
+  CAST(t.start_station_id AS STRING) = CAST(s.station_id AS STRING)

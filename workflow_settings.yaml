@@ -2,3 +2,9 @@ defaultProject: sbx-edgar-ocado
 defaultDataset: dataform
 defaultAssertionDataset: dataform_assertions
 dataformCoreVersion: 3.0.42
+
+# Using datasetSuffix instead of schemaSuffix for Dataform 3.0+
+datasetSuffix: "_sandbox_sai" 
+
+vars:
+  is_test_run: "false"

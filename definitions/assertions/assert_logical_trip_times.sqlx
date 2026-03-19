@@ -1,0 +1,11 @@
+config {
+  type: "assertion",
+  description: "Fails if a trip's end_time is before its start_time"
+}
+
+SELECT
+  *
+FROM
+  ${ref("bikeshare_trips")}
+WHERE
+  end_time < start_time

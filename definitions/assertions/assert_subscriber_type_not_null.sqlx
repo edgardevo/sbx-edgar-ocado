@@ -1,0 +1,11 @@
+config {
+  type: "assertion",
+  description: "Fails if subscriber_type is NULL"
+}
+
+SELECT
+  *
+FROM
+  ${ref("bikeshare_trips")}
+WHERE
+  subscriber_type IS NULL

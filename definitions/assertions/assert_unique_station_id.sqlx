@@ -1,0 +1,13 @@
+config {
+  type: "assertion",
+  description: "Fails if there are duplicate station IDs in the stations table"
+}
+
+SELECT
+  station_id
+FROM
+  ${ref("bikeshare_stations")}
+GROUP BY
+  station_id
+HAVING
+  COUNT(1) > 1
