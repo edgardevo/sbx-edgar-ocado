@@ -1,0 +1,29 @@
+config {
+  type: "incremental",
+  partitionBy: "TIMESTAMP_TRUNC(start_time, DAY)",
+  clusterBy: ["start_station_name", "subscriber_type"],
+  description: "Staging table for bike share trips, optimized with partitioning and clustering."
+}
+
+SELECT
+  -- 1. Using your JS function to create a unique key
+  ${functions.generate_surrogate_key(['trip_id'])} AS trip_key,
+  
+  -- 2. Selecting all original columns
+  *,
+  
+  -- 3. Using your JS function to convert duration
+  ${functions.minutes_to_hours('duration_minutes')} AS duration_hours
+
+FROM
+  ${ref("bikeshare_trips")}
+
+WHERE
+  -- 4. Task 2: CI/CD Test Mode logic
+  ${ when(dataform.projectConfig.vars.is_test_run === "true", 
+      "start_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)", 
+      "1=1" 
+  )}
+  
+  -- 5. Standard Incremental Logic: Only process new data since the last run
+  ${ when(incremental(), `AND start_time > (SELECT MAX(start_time) FROM ${self()})`) }

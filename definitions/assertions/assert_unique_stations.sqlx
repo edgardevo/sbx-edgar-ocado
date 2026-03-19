@@ -1,0 +1,12 @@
+config { 
+  type: "assertion" 
+}
+
+-- Fails if any station_id appears more than once
+SELECT 
+  station_id 
+FROM 
+  ${ref("bikeshare_stations")} 
+GROUP BY 
+  station_id 
+HAVING COUNT(*) > 1

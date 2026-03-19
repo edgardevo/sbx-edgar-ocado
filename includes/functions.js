@@ -11,7 +11,7 @@ function minutes_to_hours(column_name) {
   return `ROUND(${column_name} / 60.0, 2)`;
 }
 
-// CRITICAL: You must export these functions so your .sqlx files can see them!
+// Required so that the .sqlx files can see the fucntions
 module.exports = {
   generate_surrogate_key,
   minutes_to_hours

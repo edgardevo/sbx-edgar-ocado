@@ -1,0 +1,14 @@
+config { 
+  type: "assertion" 
+}
+-- Fails if any of the trip rules are broken
+SELECT 
+  * FROM 
+  ${ref("bikeshare_trips")}
+WHERE 
+  -- Logical failure: end time is before start time
+  TIMESTAMP_ADD(start_time, INTERVAL duration_minutes MINUTE) < start_time 
+  -- Completeness failure: subscriber is null
+  OR subscriber_type IS NULL 
+  -- Range failure: duration is 0 or negative
+  OR duration_minutes <= 0

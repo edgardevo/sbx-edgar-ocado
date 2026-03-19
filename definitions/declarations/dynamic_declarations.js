@@ -6,8 +6,8 @@ const austin_tables = [
 
 austin_tables.forEach(table_name => {
     declare({
-        database: "sbx_edgar-ocado" // This is the project_id
-        , schema: "austin_bikeshare" // This is the dataset
+        database: "sbx-edgar-ocado" // This is the project_id
+        , schema: "staging" // This is the dataset
         , name: table_name // Table name from the array above
     });
 });
