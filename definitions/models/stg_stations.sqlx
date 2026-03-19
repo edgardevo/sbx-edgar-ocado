@@ -1,0 +1,9 @@
+config {
+  type: "view",
+  description: "Staging view for Austin Bikeshare Stations",
+  assertions: {
+    uniqueKey: ["station_id"]
+  }
+}
+
+SELECT * FROM ${ref("bikeshare_stations")}

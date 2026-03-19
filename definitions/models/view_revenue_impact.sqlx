@@ -1,0 +1,42 @@
+/*  
+- Challenge: Stakeholders need a real-time logic layer that doesn't duplicate storage.
+- Requirement: Create a 'view' that joins trips and stations.
+- Business Logic: Calculate a 'estimated_revenue' column where 'Walk Up' users are charged $0.12/min and 'Members' are $0.00.
+- Documentation: Every column in this view MUST have a 'description' defined in the 'config' block. 
+*/
+
+
+config {
+  type: "view",
+  description: "Gold view joining trips and stations to estimate revenue",
+  
+  /* Task 5: Column-level documentation */
+  columns: {
+    trip_id: "Unique identifier for the trip",
+    station_name: "Name of the starting station",
+    subscriber_type: "Type of user (e.g., Walk Up)",
+    duration_minutes: "Total duration of the trip in minutes",
+    estimated_revenue: "Calculated revenue: $0.12/min for Walk Up, $0.00 for Members"
+  },
+
+  /* Task 6: Dependency Circuit Breakers */
+  dependencies: [
+    "stg_stations_assertions_uniqueKey",
+    "stg_trips_assertions_rowConditions"
+  ]
+}
+
+SELECT  
+    t.Trip_Id,
+    s.name as Station_Name,
+    t.Subscriber_Type,
+    t.Duration_Minutes,
+    CASE
+        WHEN t.Subscriber_Type = 'Walk Up' THEN (t.Duration_Minutes * 0.12)
+        ELSE 0.00
+        END AS estimated_revenue 
+FROM
+    ${ref("stg_trips")} AS t
+INNER JOIN 
+    ${ref("stg_stations")} AS s
+    ON CAST(t.Start_Station_Id AS STRING) = CAST(s.Station_Id AS STRING)
