@@ -1,0 +1,13 @@
+config { type: "assertion" }
+
+select
+  trip_id
+from
+  ${ref("stg_trips")}
+where
+  -- Logical: end_time must be greater than or equal to start_time [cite: 22]
+  end_time < start_time
+  -- Completeness: subscriber_type cannot be NULL [cite: 22]
+  or subscriber_type is null
+  -- Range: trip_duration_minutes must be > 0 
+  or duration_minutes <= 0

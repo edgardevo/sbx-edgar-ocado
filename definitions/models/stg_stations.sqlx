@@ -1,0 +1,16 @@
+config {
+  type: "table",
+  description: "Cleaned station metadata for the Austin Bike Share network",
+  columns: {
+    station_id: "Unique identifier for the bike station",
+    name: "Display name of the station",
+    status: "Current operational status (e.g., active, closed)"
+  }
+}
+
+select
+  station_id,
+  name,
+  status
+from
+  ${ref("bikeshare_stations")} -- Refers to Task 1 declarations

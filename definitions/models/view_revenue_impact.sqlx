@@ -1,0 +1,26 @@
+config {
+  type: "view", // Stakeholders need a real-time logic layer [cite: 17]
+  description: "Gold layer for Austin Bike Share revenue analysis",
+  dependencies: ["stg_trips_assertions"], // Ensure Task 5 depends on assertions [cite: 24]
+  columns: {
+    trip_id: "Unique identifier for the bike trip",
+    subscriber_type: "The type of membership held by the rider",
+    duration_minutes: "Total length of the trip in minutes",
+    estimated_revenue: "Calculated revenue: Walk Up @ $0.12/min, Members @ $0.00"
+  } // Documentation: Every column MUST have a description [cite: 20]
+}
+
+select
+  t.trip_id,
+  t.subscriber_type,
+  t.duration_minutes,
+  -- Business Logic: Walk Up users charged $0.12/min, Members $0.00 [cite: 19]
+  case 
+    when t.subscriber_type = 'Walk Up' then (t.duration_minutes * 0.12)
+    else 0 
+  end as estimated_revenue
+from
+  ${ref("stg_trips")} as t
+left join
+  ${ref("bikeshare_stations")} as s 
+  on t.start_station_id = s.station_id -- Task 5: Join trips and stations [cite: 18]

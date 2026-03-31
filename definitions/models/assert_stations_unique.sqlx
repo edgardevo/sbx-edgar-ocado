@@ -1,0 +1,9 @@
+config { type: "assertion" }
+
+-- Requirement: station_id must be unique in the stations table [cite: 21]
+select
+  station_id
+from
+  ${ref("bikeshare_stations")}
+group by 1
+having count(*) > 1

@@ -1,0 +1,27 @@
+config {
+  type: "incremental",
+  bigquery: {
+    partitionBy: "TIMESTAMP_TRUNC(start_time, DAY)", // [cite: 14]
+    clusterBy: ["start_station_name", "subscriber_type"] // [cite: 14]
+  }
+}
+
+select
+  trip_id,
+  start_time,
+  end_time,
+  start_station_id,
+  start_station_name,
+  subscriber_type,
+  duration_minutes,
+  ${functions.minutes_to_hours("duration_minutes")} as duration_hours,
+  ${functions.generate_surrogate_key(["trip_id", "start_station_id"])} as trip_hash
+from
+  ${ref("bikeshare_trips")}
+where
+  true
+  ${when(dataform.projectConfig.vars.is_test_run === "true", 
+    `and start_time >= timestamp_sub(current_timestamp(), interval 7 day)`)}
+  
+  ${when(incremental(), 
+    `and start_time > (select max(start_time) from ${self()})`)}
