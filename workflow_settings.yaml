@@ -1,5 +1,5 @@
 defaultProject: sbx-edgar-ocado
-defaultDataset: austin_bikeshare_gold
+defaultDataset: dataform
 defaultAssertionDataset: dataform_assertions
 dataformCoreVersion: 3.0.42
 defaultLocation: EU  # Change from US to EU

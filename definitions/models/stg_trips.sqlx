@@ -9,13 +9,12 @@ config {
 select
   trip_id,
   start_time,
-  end_time,
+  TIMESTAMP_ADD(start_time, INTERVAL duration_minutes MINUTE) AS end_time,
   start_station_id,
   start_station_name,
   subscriber_type,
   duration_minutes,
-  ${functions.minutes_to_hours("duration_minutes")} as duration_hours,
-  ${functions.generate_surrogate_key(["trip_id", "start_station_id"])} as trip_hash
+  ${functions.generate_surrogate_key(["trip_id", "start_time"])} as trip_hash
 from
   ${ref("bikeshare_trips")}
 where

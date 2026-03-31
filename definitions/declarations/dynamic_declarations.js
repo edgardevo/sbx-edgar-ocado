@@ -1,12 +1,13 @@
-const sources = [
-    { name: "bikeshare_trips", schema: "staging" },
-    { name: "bikeshare_stations", schema: "staging" }
+const sources_tables = [
+    "bikeshare_trips",
+    "bikeshare_stations",
+    "daily_bikeshare_trips"
 ];
 
-sources.forEach((source) => {
+sources_tables.forEach((table_name) => {
     declare({
         database: "sbx-edgar-ocado", // Data is hosted in public datasets
-        schema: source.schema,
-        name: source.name,
+        schema: "staging",
+        name: table_name
     });
 });

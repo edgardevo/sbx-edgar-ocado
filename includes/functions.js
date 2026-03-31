@@ -1,5 +1,5 @@
 function generate_surrogate_key(list_of_columns) {
-    return `farn_hash(concat(${list_of_columns.join(", ")}))`; // Standardized hashing [cite: 10]
+    return `farm_fingerprint(concat(${list_of_columns.join(", ")}))`; // Standardized hashing [cite: 10]
 }
 
 function minutes_to_hours(column_name) {
